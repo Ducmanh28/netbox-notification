@@ -109,7 +109,7 @@ sudo iptables -A INPUT -p tcp --dport 5000 -j ACCEPT
 # Hay firewalld
 sudo firewall-cmd --zone=public --add-port=5000/tcp --permanent
 ```
-## Khởi chạy
+## Khởi chạy mặc định
 Truy cập vào nơi lưu file code
 ```
 cd App
@@ -126,4 +126,37 @@ Hình ảnh mẫu kết quả trên Telegram:
 Hình ảnh mẫu journal được tạo:
 
 ![](/Notify/Picture/Screenshot_1012.png)
+
+## Hướng dẫn cấu hình Tool thành một dịch vụ
+Tạo file service:
+
+```
+sudo vim /etc/systemd/system/notify.service
+```
+
+Thêm vào đoạn code sau(lưu ý chỉnh sửa 1 số thông tin để phù hợp với thiết bị của bạn)
+
+```
+[Unit]
+Description=Notify Service for NetBox Changes
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=(Đường dẫn chứa file main.py)
+ExecStart=/usr/bin/python3 /home/ducmanh/Warning/App/main.py
+Restart=always
+RestartSec=5
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
+```
+Reload và kiểm tra lại
+```
+sudo systemctl daemon-reload
+sudo systemctl enable notify.service
+sudo systemctl start notify.service
+```
 
